@@ -13,22 +13,20 @@ void stream_to_buffer(hls::stream<axis_t> &stream, data_t buffer_R[FFT_SIZE], da
 
 void buffer_to_stream(data_t buffer_R[FFT_SIZE], data_t buffer_I[FFT_SIZE], hls::stream<axis_t> &stream) {
 
-    static int count = 1;
-
     loop_buffer_to_stream:
     for (int i = 0; i < FFT_SIZE; i++) {
         axis_t temp;
         temp.data = std::complex<float>(buffer_R[i], buffer_I[i]);
-        if (count == 10 && i == FFT_SIZE - 1) {
+        temp.keep = -1;
+        temp.strb = -1;
+        if (i == FFT_SIZE - 1) {
             temp.last = 1;
-            count = 1;
         }
         else {
             temp.last = 0;
         }
         stream.write(temp);
     }
-    count++;
 }
 
 unsigned int reverse_bits(unsigned int input) {
